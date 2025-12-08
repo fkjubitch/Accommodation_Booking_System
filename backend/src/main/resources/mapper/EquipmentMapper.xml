@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camping.mapper.EquipmentMapper">
+
+    <resultMap id="EquipmentResultMap" type="com.camping.entity.Equipment">
+        <id column="equip_id" property="equipId" javaType="java.lang.Long"/>
+        <result column="equip_name" property="equipName" javaType="java.lang.String"/>
+        <result column="unit_price" property="unitPrice" javaType="java.math.BigDecimal"/>
+        <result column="total_stock" property="totalStock" javaType="java.lang.Integer"/>
+        <result column="category" property="category" javaType="java.lang.String"/>
+        <result column="description" property="description" javaType="java.lang.String"/>
+        <result column="status" property="status" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="EquipmentResultMap">
+        SELECT equip_id, equip_name, unit_price, total_stock, category, description, status
+        FROM equipments
+        WHERE status = 1
+        ORDER BY category, equip_id
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="EquipmentResultMap">
+        SELECT equip_id, equip_name, unit_price, total_stock, category, description, status
+        FROM equipments
+        WHERE equip_id = #{equipId} AND status = 1
+    </select>
+
+    <select id="selectByCategory" parameterType="java.lang.String" resultMap="EquipmentResultMap">
+        SELECT equip_id, equip_name, unit_price, total_stock, category, description, status
+        FROM equipments
+        WHERE category = #{category} AND status = 1
+        ORDER BY equip_id
+    </select>
+
+    <insert id="insert" parameterType="com.camping.entity.Equipment" useGeneratedKeys="true" keyProperty="equipId">
+        INSERT INTO equipments (equip_name, unit_price, total_stock, category, description, status)
+        VALUES (#{equipName}, #{unitPrice}, #{totalStock}, #{category}, #{description}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.camping.entity.Equipment">
+        UPDATE equipments
+        SET equip_name = #{equipName},
+            unit_price = #{unitPrice},
+            total_stock = #{totalStock},
+            category = #{category},
+            description = #{description},
+            status = #{status}
+        WHERE equip_id = #{equipId}
+    </update>
+
+</mapper>

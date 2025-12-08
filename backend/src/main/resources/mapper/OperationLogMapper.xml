@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camping.mapper.OperationLogMapper">
+
+    <resultMap id="OperationLogResultMap" type="com.camping.entity.OperationLog">
+        <id column="log_id" property="logId" javaType="java.lang.Long"/>
+        <result column="operation" property="operation" javaType="java.lang.String"/>
+        <result column="operator_id" property="operatorId" javaType="java.lang.Long"/>
+        <result column="operator_name" property="operatorName" javaType="java.lang.String"/>
+        <result column="description" property="description" javaType="java.lang.String"/>
+        <result column="details" property="details" javaType="java.lang.String"/>
+        <result column="log_time" property="logTime" javaType="java.time.LocalDateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.camping.entity.OperationLog" useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO operation_logs (operation, operator_id, operator_name, description, details, log_time)
+        VALUES (#{operation}, #{operatorId}, #{operatorName}, #{description}, #{details}, #{logTime})
+    </insert>
+
+    <select id="selectByOperation" parameterType="java.util.Map" resultMap="OperationLogResultMap">
+        SELECT log_id, operation, operator_id, operator_name, description, details, log_time
+        FROM operation_logs
+        <where>
+            <if test="operation != null and operation != ''">
+                AND operation = #{operation}
+            </if>
+        </where>
+        ORDER BY log_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectAll" parameterType="java.util.Map" resultMap="OperationLogResultMap">
+        SELECT log_id, operation, operator_id, operator_name, description, details, log_time
+        FROM operation_logs
+        ORDER BY log_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+</mapper>

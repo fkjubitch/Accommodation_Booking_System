@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camping.mapper.SiteMapper">
+
+    <resultMap id="SiteResultMap" type="com.camping.entity.Site">
+        <id column="site_id" property="siteId" javaType="java.lang.Long"/>
+        <result column="type_id" property="typeId" javaType="java.lang.Long"/>
+        <result column="site_no" property="siteNo" javaType="java.lang.String"/>
+        <result column="status" property="status" javaType="java.lang.Integer"/>
+        <result column="create_time" property="createTime" javaType="java.time.LocalDateTime"/>
+        <result column="update_time" property="updateTime" javaType="java.time.LocalDateTime"/>
+    </resultMap>
+
+    <select id="selectByTypeId" parameterType="java.lang.Long" resultMap="SiteResultMap">
+        SELECT site_id, type_id, site_no, status, create_time, update_time
+        FROM sites
+        WHERE type_id = #{typeId} AND status = 1
+        ORDER BY site_no
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="SiteResultMap">
+        SELECT site_id, type_id, site_no, status, create_time, update_time
+        FROM sites
+        WHERE site_id = #{siteId}
+    </select>
+
+    <select id="selectAvailable" parameterType="java.util.Map" resultMap="SiteResultMap">
+        SELECT s.site_id, s.type_id, s.site_no, s.status, s.create_time, s.update_time
+        FROM sites s
+        WHERE s.type_id = #{typeId}
+        AND s.status = 1
+        AND s.site_id NOT IN (
+            SELECT DISTINCT b.site_id
+            FROM bookings b
+            WHERE b.type_id = #{typeId}
+            AND b.status IN (0, 1)
+            AND NOT (b.check_out &lt;= #{checkIn} OR b.check_in &gt;= #{checkOut})
+        )
+        ORDER BY s.site_no
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insert" parameterType="com.camping.entity.Site" useGeneratedKeys="true" keyProperty="siteId">
+        INSERT INTO sites (type_id, site_no, status, create_time, update_time)
+        VALUES (#{typeId}, #{siteNo}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.camping.entity.Site">
+        UPDATE sites
+        SET type_id = #{typeId},
+            site_no = #{siteNo},
+            status = #{status},
+            update_time = #{updateTime}
+        WHERE site_id = #{siteId}
+    </update>
+
+</mapper>

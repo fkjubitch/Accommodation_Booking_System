@@ -1,43 +1,44 @@
 package com.camping.service;
 
+import com.camping.dto.BookingCheckDTO;
 import com.camping.dto.BookingCreateDTO;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.camping.entity.Booking;
+import java.util.List;
 import java.util.Map;
 
-@Service
-public class BookingService {
+/**
+ * 预订业务接口
+ */
+public interface BookingService {
+
+    /**
+     * 预订前检查 - 验证库存和计算价格
+     */
+    Map<String, Object> checkBooking(BookingCheckDTO dto) throws Exception;
 
     /**
      * 创建订单 - 核心事务方法
-     * 对应文档第6页: @Transactional 注解
-     * 对应文档第9页: 价格后端计算一致性
-     * 对应文档第10页: 装备库存算法 & 营位自动分配
+     * 包含: 校验库存 -> 计算价格 -> 分配营位 -> 落库
      */
-    @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> createOrder(BookingCreateDTO dto) {
-        // 1. 价格计算:
-        // 查询 SiteTypeTable basePrice
-        // 查询 DailyPriceTable 浮动价格
-        // 查询 EquipmentTable 单价
-        // 计算 totalPrice (不使用前端传来的价格)
+    Map<String, Object> createOrder(BookingCreateDTO dto) throws Exception;
 
-        // 2. 装备库存检查 (文档 Page 10 SQL逻辑):
-        // 遍历 dto.equipments
-        // 执行 SQL: SELECT SUM(quantity) FROM BookingEquipTable ...
-        // if (totalStock - used < request) throw new RuntimeException("装备不足");
+    /**
+     * 支付订单
+     */
+    void payBooking(Long bookingId) throws Exception;
 
-        // 3. 营位自动分配 (Auto-Assign Site):
-        // 查询 SiteTable WHERE typeID = ? AND status = 1
-        // 排除在 BookingTable 中时间段冲突的 siteID
-        // if (availableSites.isEmpty()) throw new RuntimeException("满房");
-        // Long siteId = availableSites.get(0).getId();
+    /**
+     * 获取我的订单
+     */
+    List<Booking> getMyBookings(Long userId, Integer status) throws Exception;
 
-        // 4. 数据落库:
-        // INSERT INTO BookingTable (status=0, ...)
-        // INSERT INTO BookingEquipTable ...
+    /**
+     * 获取订单详情
+     */
+    Booking getBookingDetail(Long bookingId) throws Exception;
 
-        // 5. 返回结果
-        return null;
-    }
+    /**
+     * 取消订单
+     */
+    void cancelBooking(Long bookingId) throws Exception;
 }

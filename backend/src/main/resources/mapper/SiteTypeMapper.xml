@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camping.mapper.SiteTypeMapper">
+
+    <resultMap id="SiteTypeResultMap" type="com.camping.entity.SiteType">
+        <id column="type_id" property="typeId" javaType="java.lang.Long"/>
+        <result column="type_name" property="typeName" javaType="java.lang.String"/>
+        <result column="base_price" property="basePrice" javaType="java.math.BigDecimal"/>
+        <result column="max_guests" property="maxGuests" javaType="java.lang.Integer"/>
+        <result column="description" property="description" javaType="java.lang.String"/>
+        <result column="image_url" property="imageUrl" javaType="java.lang.String"/>
+        <result column="status" property="status" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="SiteTypeResultMap">
+        SELECT type_id, type_name, base_price, max_guests, description, image_url, status
+        FROM site_types
+        WHERE status = 1
+        ORDER BY type_id
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="SiteTypeResultMap">
+        SELECT type_id, type_name, base_price, max_guests, description, image_url, status
+        FROM site_types
+        WHERE type_id = #{typeId} AND status = 1
+    </select>
+
+    <insert id="insert" parameterType="com.camping.entity.SiteType" useGeneratedKeys="true" keyProperty="typeId">
+        INSERT INTO site_types (type_name, base_price, max_guests, description, image_url, status)
+        VALUES (#{typeName}, #{basePrice}, #{maxGuests}, #{description}, #{imageUrl}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.camping.entity.SiteType">
+        UPDATE site_types
+        SET type_name = #{typeName},
+            base_price = #{basePrice},
+            max_guests = #{maxGuests},
+            description = #{description},
+            image_url = #{imageUrl},
+            status = #{status}
+        WHERE type_id = #{typeId}
+    </update>
+
+</mapper>
