@@ -1,22 +1,27 @@
-CREATE VIEW View_Daily_Revenue AS
-SELECT date(checkInTime) as date, SUM(totalPrice) as revenue
+-- 1. 视图设计 (View)
+CREATE OR REPLACE VIEW View_Daily_Revenue AS
+SELECT 
+    DATE(checkInTime) as date, 
+    SUM(totalPrice) as revenue
 FROM BookingTable
-WHERE status = 1 -- 已支付
-GROUP BY date(checkInTime);
+WHERE status = 1 -- 1: 已支付
+GROUP BY DATE(checkInTime);
 
--- 需要定义 Function 和 Trigger
-CREATE FUNCTION audit_log_func() RETURNS TRIGGER AS $$
+-- 2. 触发器函数 (PostgreSQL 需要先定义 Function 再绑定 Trigger)
+CREATE OR REPLACE FUNCTION func_booking_audit() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO OperationLogTable (operation, operatorID, description, logTime)
-    VALUES ('NEW_ORDER', NEW.userID, 'Order ID ' || NEW.bookingID || ' created', NOW());
+    VALUES (
+        'NEW_ORDER', 
+        NEW.userID, 
+        'Order ID ' || NEW.bookingID || ' created for Site ' || NEW.siteID, 
+        NOW()
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+-- 3. 绑定触发器
 CREATE TRIGGER Trigger_Booking_Audit
 AFTER INSERT ON BookingTable
-FOR EACH ROW EXECUTE FUNCTION audit_log_func();
-
-CREATE INDEX idx_booking_time ON BookingTable (checkInTime, checkOutTime);
-CREATE INDEX idx_booking_status ON BookingTable (status);
-CREATE INDEX idx_daily_price ON DailyPriceTable (typeID, specificDate);
+FOR EACH ROW EXECUTE FUNCTION func_booking_audit();
