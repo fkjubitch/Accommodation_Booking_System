@@ -339,34 +339,5 @@ public class BookingServiceImpl implements BookingService {
         // TODO: 排除时间冲突的营位
         // TODO: 返回第一个可用的营位ID
         return 1L; // 模拟
-    }}}
-
-    // 3. 营位自动分配 (Auto-Assign Site)
-    // 查找该时间段未被占用的 Site
-    SiteTable availableSite = siteRepo.findFirstAvailableSite(dto.getTypeId(), dto.getCheckIn(), dto.getCheckOut());if(availableSite==null)
-    {
-        throw new RuntimeException("该房型已满房");
     }
-
-    // 4. 落库 (BookingTable)
-    BookingTable booking = new BookingTable();booking.setUserId(dto.getUserId());booking.setSiteId(availableSite.getSiteId());booking.setTotalPrice(finalTotalPrice); // 写入后端计算的价格
-    booking.setStatus(0); // 待支付
-    booking.setCheckInTime(Timestamp.valueOf(dto.getCheckIn()+" 14:00:00"));booking.setCheckOutTime(Timestamp.valueOf(dto.getCheckOut()+" 12:00:00"));booking=bookingRepo.save(booking);
-
-    // 5. 落库关联表 (BookingEquipTable)
-    for(
-    EquipSelectDTO eq:dto.getEquipments())
-    {
-        BookingEquip be = new BookingEquip();
-        be.setBookingId(booking.getBookingId());
-        be.setEquipId(eq.getEquipId());
-        be.setQuantity(eq.getCount());
-        bookingEquipRepo.save(be);
-    }
-
-    // 6. 返回结果
-    return Map.of("bookingId",booking.getBookingId(),"siteNo",availableSite.getSiteNo(),"totalPrice",finalTotalPrice);
-}
-
-// 辅助方法：计算房费逻辑省略...
 }

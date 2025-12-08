@@ -26,7 +26,59 @@
         <jwt.version>0.11.5</jwt.version>
         <mybatis.version>2.2.2</mybatis.version>
         <postgresql.version>42.5.1</postgresql.version>
+        <jjwt-api.version>0.12.3</jjwt-api.version>
+        <maven.compiler.release>11</maven.compiler.release>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>aliyun</id>
+            <name>Aliyun Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>aliyun</id>
+            <name>Aliyun Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <!-- Spring Boot Web -->
@@ -56,11 +108,25 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JWT -->
+        <!-- JWT - JJWT API for token creation and parsing -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jwt.version}</version>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt-api.version}</version>
+        </dependency>
+        <!-- JWT - JJWT Implementation -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- JWT - JJWT Jackson Serializer -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Lombok -->
