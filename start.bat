@@ -38,11 +38,24 @@ echo OK: All tools found
 echo.
 
 REM Database settings
-set DB_HOST=localhost
-set DB_PORT=5432
-set DB_NAME=camping_db
-set DB_USER=postgres
-set DB_PASSWORD=postgres
+echo Log In Postgresql:
+
+setlocal enabledelayedexpansion
+
+set /p "DB_HOST=localhost [localhost]: "
+if "%DB_HOST%"=="" set "DB_HOST=localhost"
+
+set /p "DB_PORT=port [5432]: "
+if "%DB_PORT%"=="" set "DB_PORT=5432"
+
+set /p "DB_NAME=database [camping_db]: "
+if "%DB_NAME%"=="" set "DB_NAME=camping_db"
+
+set /p "DB_USER=user [postgres]: "
+if "%DB_USER%"=="" set "DB_USER=postgres"
+
+set /p "DB_PASSWORD=password [postgres]: "
+if "%DB_PASSWORD%"=="" set "DB_PASSWORD=postgres"
 
 REM Initialize database
 echo [1/4] Initializing database...
@@ -54,7 +67,9 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+echo Executing sql/views_triggers.sql
 psql -h %DB_HOST% -U %DB_USER% -d %DB_NAME% -f sql\views_triggers.sql
+echo Executing sql/data.sql
 psql -h %DB_HOST% -U %DB_USER% -d %DB_NAME% -f sql\data.sql
 echo OK: Database initialized
 echo.
