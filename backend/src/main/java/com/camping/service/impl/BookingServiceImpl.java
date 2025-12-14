@@ -179,6 +179,7 @@ public class BookingServiceImpl implements BookingService {
             result.put("bookingId", bookingId);
             result.put("siteNo", "A-101"); // 从 site 对象获取
             result.put("totalPrice", totalPrice);
+            result.put("status", 1); // 演示原型：直接视为完成
 
             return result;
 

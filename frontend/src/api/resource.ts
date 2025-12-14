@@ -6,7 +6,10 @@ export interface SiteType {
   typeId: number
   typeName: string
   basePrice: number
+  priceToday?: number
   maxGuests: number
+  totalSites?: number
+  availableSites?: number
   description?: string
   imageUrl?: string
 }
@@ -22,7 +25,7 @@ export interface Equipment {
   equipId: number
   equipName: string
   unitPrice: number
-  totalStock: number
+  totalStock?: number
   availableStock?: number
   description?: string
   category?: string
@@ -51,6 +54,13 @@ export const resourceApi = {
    */
   getSiteTypes: () => {
     return request.get('/type/list')
+  },
+
+  /**
+   * 获取当日房型列表（含当日价格与可用量）
+   */
+  getSiteTypesToday: () => {
+    return request.get('/type/list/today')
   },
 
   /**
@@ -102,6 +112,13 @@ export const resourceApi = {
   },
 
   /**
+   * 获取当日装备列表（含当日可用库存）
+   */
+  getEquipmentsToday: () => {
+    return request.get('/equip/list/today')
+  },
+
+  /**
    * 获取装备详情
    * @param equipId 装备ID
    * @returns 装备详细信息
@@ -134,5 +151,16 @@ export const resourceApi = {
    */
   getEquipmentsByCategory: (category: string) => {
     return request.get(`/equip/category/${category}`)
+  }
+  ,
+  /**
+   * 查询指定资源在日期范围内的剩余数量
+   * kind: 'site' | 'equip'
+   * typeId: 房型ID或装备类型ID
+   */
+  queryAvailability: (kind: 'site' | 'equip', typeId: number, startDate: string, endDate: string) => {
+    return request.get('/availability/query', {
+      params: { kind, typeId, startDate, endDate }
+    })
   }
 }

@@ -150,3 +150,55 @@ CREATE TRIGGER trigger_booking_log
 AFTER INSERT OR UPDATE ON bookings
 FOR EACH ROW
 EXECUTE FUNCTION log_booking_operation();
+
+-- 今日房型价格与可用量视图（基于当前日期）
+CREATE OR REPLACE VIEW view_site_availability_today AS
+SELECT
+    st.type_id,
+    st.type_name,
+    COALESCE(dp.price, st.base_price) AS price_today,
+    st.base_price,
+    COUNT(s.site_id) FILTER (WHERE s.status = 1) AS total_sites,
+    COUNT(s.site_id) FILTER (WHERE s.status = 1) - COALESCE(occ.occupied_sites, 0) AS available_sites
+FROM site_types st
+LEFT JOIN sites s ON s.type_id = st.type_id AND s.status = 1
+LEFT JOIN (
+    SELECT
+        b.type_id,
+        COUNT(*) AS occupied_sites
+    FROM bookings b
+    WHERE b.status <> 2 -- 非取消
+      AND b.check_in < CURRENT_DATE
+      AND b.check_out > CURRENT_DATE
+    GROUP BY b.type_id
+) occ ON occ.type_id = st.type_id
+LEFT JOIN daily_prices dp
+    ON dp.type_id = st.type_id
+   AND dp.specific_date = CURRENT_DATE
+WHERE st.status = 1
+GROUP BY st.type_id, st.type_name, st.base_price, dp.price, occ.occupied_sites;
+
+-- 今日装备可用量视图（基于当前日期）
+CREATE OR REPLACE VIEW view_equipment_availability_today AS
+SELECT
+    e.equip_id,
+    e.equip_name,
+    e.category,
+    e.unit_price,
+    e.total_stock,
+    e.description,
+    e.status,
+    e.total_stock - COALESCE(used.used_qty, 0) AS available_stock
+FROM equipments e
+LEFT JOIN (
+    SELECT
+        be.equip_id,
+        SUM(be.quantity) AS used_qty
+    FROM booking_equips be
+    JOIN bookings b ON b.booking_id = be.booking_id
+    WHERE b.status <> 2 -- 非取消
+      AND b.check_in < CURRENT_DATE
+      AND b.check_out > CURRENT_DATE
+    GROUP BY be.equip_id
+) used ON used.equip_id = e.equip_id
+WHERE e.status = 1;

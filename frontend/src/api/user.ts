@@ -51,16 +51,16 @@ export const userApi = {
    * 获取当前用户信息
    * @returns 用户信息
    */
-  getCurrentUser: () => {
-    return request.get('/user/info')
+  getCurrentUser: (token: string) => {
+    return request.get('/user/info', { params: { token } })
   },
 
   /**
    * 用户登出
    * @returns 登出结果
    */
-  logout: () => {
-    return request.post('/user/logout', {})
+  logout: (token: string) => {
+    return request.post('/user/logout', null, { params: { token } })
   },
 
   /**
@@ -78,7 +78,7 @@ export const userApi = {
    * @param newPassword 新密码
    * @returns 修改结果
    */
-  changePassword: (oldPassword: string, newPassword: string) => {
-    return request.post('/user/password', { oldPassword, newPassword })
+  changePassword: (token: string, oldPassword: string, newPassword: string) => {
+    return request.post('/user/password', { token, oldPassword, newPassword })
   }
 }

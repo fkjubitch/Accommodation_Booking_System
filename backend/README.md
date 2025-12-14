@@ -125,44 +125,62 @@ http://localhost:8080/api
 
 ### 用户模块 (/user)
 
-| 方法 | 端点           | 描述         |
-| ---- | -------------- | ------------ |
-| POST | /user/register | 用户注册     |
-| POST | /user/login    | 用户登录     |
-| GET  | /user/info     | 获取用户信息 |
-| POST | /user/logout   | 用户登出     |
-| PUT  | /user/info     | 更新用户信息 |
-| POST | /user/password | 修改密码     |
+| 方法 | 端点           | 描述                                |
+| ---- | -------------- | ----------------------------------- |
+| POST | /user/register | 用户注册                            |
+| POST | /user/login    | 用户登录                            |
+| GET  | /user/info     | 获取用户信息（需传 `token` 参数）   |
+| POST | /user/logout   | 用户登出（需传 `token` 参数）       |
+| PUT  | /user/info     | 更新用户信息                        |
+| POST | /user/password | 修改密码（需传 `token`、旧/新密码） |
 
 ### 预订模块 (/booking)
 
-| 方法 | 端点            | 描述         |
-| ---- | --------------- | ------------ |
-| POST | /booking/check  | 检查可用性   |
-| POST | /booking/create | 创建预订     |
-| POST | /booking/pay    | 支付预订     |
-| GET  | /booking/my     | 获取我的预订 |
-| GET  | /booking/{id}   | 获取预订详情 |
-| POST | /booking/cancel | 取消预订     |
+| 方法 | 端点                     | 描述                                                  |
+| ---- | ------------------------ | ----------------------------------------------------- |
+| POST | /booking/check           | 检查可用性                                            |
+| POST | /booking/create          | 创建预订（返回 `bookingId/siteNo/totalPrice/status`） |
+| POST | /booking/pay             | 支付预订                                              |
+| GET  | /booking/my              | 获取我的预订                                          |
+| GET  | /booking/{id}            | 获取预订详情                                          |
+| POST | /booking/cancel          | 取消预订                                              |
+| GET  | /booking/{id}/equipments | 获取订单的装备列表                                    |
 
-### 资源模块 (/resource)
+### 资源模块
 
-| 方法 | 端点           | 描述         |
-| ---- | -------------- | ------------ |
-| GET  | /type/list     | 营地类型列表 |
-| GET  | /type/{id}     | 营地类型详情 |
-| GET  | /type/calendar | 日历信息     |
-| GET  | /equip/list    | 设备列表     |
-| GET  | /equip/{id}    | 设备详情     |
+| 方法 | 端点                | 描述                                                                 |
+| ---- | ------------------- | -------------------------------------------------------------------- |
+| GET  | /type/list          | 房型列表（含总数/可用数等）                                          |
+| GET  | /type/list/today    | 当日房型列表（含 `priceToday/available`）                            |
+| GET  | /type/{id}          | 房型详情                                                             |
+| GET  | /type/calendar      | 价格/占用日历（按日期范围）                                          |
+| POST | /type/prices        | 指定日期的日价列表                                                   |
+| GET  | /equip/list         | 装备列表（含库存）                                                   |
+| GET  | /equip/list/today   | 当日装备列表（含可用库存）                                           |
+| GET  | /equip/{id}         | 装备详情                                                             |
+| POST | /equip/stock        | 批量查询装备库存                                                     |
+| GET  | /equip/categories   | 装备分类列表                                                         |
+| GET  | /equip/category/{c} | 按分类查询装备                                                       |
+| GET  | /availability/query | 查询资源在日期范围的剩余量（参数：kind, typeId, startDate, endDate） |
 
 ### 管理模块 (/admin)
 
-| 方法 | 端点                  | 描述         |
-| ---- | --------------------- | ------------ |
-| POST | /admin/price/set      | 设置日期价格 |
-| GET  | /admin/report/daily   | 每日收入报告 |
-| GET  | /admin/stats/booking  | 预订统计     |
-| GET  | /admin/logs/operation | 操作日志     |
+| 方法 | 端点                          | 描述                  |
+| ---- | ----------------------------- | --------------------- |
+| POST | /admin/price/set              | 设置日期价格          |
+| POST | /admin/price/batch            | 批量设置日期价格      |
+| GET  | /admin/report/daily           | 每日收入报告          |
+| GET  | /admin/report/type            | 房型收入报告          |
+| GET  | /admin/stats/booking          | 预订统计              |
+| GET  | /admin/stats/type             | 房型统计              |
+| GET  | /admin/logs/operation         | 操作日志（分页/筛选） |
+| GET  | /admin/sites                  | 营位列表（可按房型）  |
+| GET  | /admin/site/{siteId}          | 营位详情              |
+| PUT  | /admin/site/{siteId}/status   | 更新营位状态          |
+| GET  | /admin/occupancy/date         | 指定日期占用情况      |
+| GET  | /admin/revenue/trend          | 收益趋势              |
+| POST | /admin/booking/price-adjust   | 手动调整订单价格      |
+| GET  | /admin/user/{userId}/behavior | 用户操作记录          |
 
 ## 核心业务逻辑
 

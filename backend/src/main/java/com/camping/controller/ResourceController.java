@@ -16,13 +16,27 @@ public class ResourceController {
     private ResourceService resourceService;
 
     /**
+     * 获取当日房型列表（含当日价格与可用量）
+     */
+    @GetMapping("/type/list/today")
+    public Result<List<Object>> getSiteTypesToday() {
+        try {
+            // TODO: 调用 Service 查询 view_site_availability_today
+            List<Object> list = resourceService.getSiteTypesToday();
+            return Result.success(list);
+        } catch (Exception e) {
+            return Result.error("获取当日房型列表失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 获取所有房型列表
      */
     @GetMapping("/type/list")
     public Result<List<Object>> getSiteTypes() {
         try {
-            // TODO: 调用 Service 查询房型列表
-            List<Object> types = new ArrayList<>();
+            // TODO: 调用 Service 查询房型列表，并补充 totalSites/availableSites
+            List<Object> types = resourceService.getSiteTypes();
             return Result.success(types);
         } catch (Exception e) {
             return Result.error("获取房型列表失败: " + e.getMessage());
@@ -36,7 +50,8 @@ public class ResourceController {
     public Result<Object> getSiteTypeDetail(@PathVariable Long typeId) {
         try {
             // TODO: 从数据库查询房型详情
-            return Result.success(new HashMap<>());
+            Object detail = resourceService.getSiteTypeDetail(typeId);
+            return Result.success(detail);
         } catch (Exception e) {
             return Result.error("获取房型详情失败: " + e.getMessage());
         }
@@ -51,12 +66,7 @@ public class ResourceController {
             @RequestParam String startDate,
             @RequestParam String endDate) {
         try {
-            // TODO: 查询该房型的所有营位
-            // TODO: 按天统计已预订数量
-            // TODO: 查询浮动价格
-            Map<String, Object> calendar = new HashMap<>();
-            calendar.put("typeId", typeId);
-            calendar.put("calendarData", new ArrayList<>());
+            Map<String, Object> calendar = resourceService.getCalendar(typeId, startDate, endDate);
             return Result.success(calendar);
         } catch (Exception e) {
             return Result.error("获取日历失败: " + e.getMessage());
@@ -82,10 +92,25 @@ public class ResourceController {
     @GetMapping("/equip/list")
     public Result<List<Object>> getEquipments() {
         try {
-            // TODO: 调用 Service 查询装备列表
-            return Result.success(new ArrayList<>());
+            // TODO: 调用 Service 查询装备列表，返回 totalStock/availableStock
+            List<Object> list = resourceService.getEquipments();
+            return Result.success(list);
         } catch (Exception e) {
             return Result.error("获取装备列表失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取当日装备列表（含当日可用库存）
+     */
+    @GetMapping("/equip/list/today")
+    public Result<List<Object>> getEquipmentsToday() {
+        try {
+            // TODO: 调用 Service 查询 view_equipment_availability_today
+            List<Object> list = resourceService.getEquipmentsToday();
+            return Result.success(list);
+        } catch (Exception e) {
+            return Result.error("获取装备可用库存失败: " + e.getMessage());
         }
     }
 
@@ -96,7 +121,8 @@ public class ResourceController {
     public Result<Object> getEquipmentDetail(@PathVariable Long equipId) {
         try {
             // TODO: 从数据库查询装备详情
-            return Result.success(new HashMap<>());
+            Object detail = resourceService.getEquipmentDetail(equipId);
+            return Result.success(detail);
         } catch (Exception e) {
             return Result.error("获取装备详情失败: " + e.getMessage());
         }
@@ -138,6 +164,31 @@ public class ResourceController {
             return Result.success(new ArrayList<>());
         } catch (Exception e) {
             return Result.error("获取分类装备失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 查询指定资源在日期范围内的剩余数量
+     * kind: site|equip, typeId: 房型ID或装备类型ID
+     */
+    @GetMapping("/availability/query")
+    public Result<Object> queryAvailability(@RequestParam String kind,
+            @RequestParam Long typeId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        try {
+            // TODO: 根据 kind 判断查询房型或装备在日期范围的剩余量
+            // 返回示例: { kind:"site", typeId:1, startDate, endDate, remaining: 5, total: 10 }
+            var data = new java.util.HashMap<String, Object>();
+            data.put("kind", kind);
+            data.put("typeId", typeId);
+            data.put("startDate", startDate);
+            data.put("endDate", endDate);
+            data.put("remaining", 0);
+            data.put("total", 0);
+            return Result.success(data);
+        } catch (Exception e) {
+            return Result.error("查询可用量失败: " + e.getMessage());
         }
     }
 }

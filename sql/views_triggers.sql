@@ -1,8 +1,4 @@
--- ============================================================================
--- 视图和触发器定义
--- ============================================================================
 
--- 视图1: 日期收入汇总视图
 CREATE OR REPLACE VIEW view_daily_revenue AS
 SELECT 
     DATE(b.create_time) as revenue_date,
@@ -18,7 +14,6 @@ JOIN site_types st ON b.type_id = st.type_id
 GROUP BY DATE(b.create_time), st.type_id, st.type_name
 ORDER BY revenue_date DESC;
 
--- 视图2: 营地利用率视图
 CREATE OR REPLACE VIEW view_site_occupancy AS
 SELECT 
     st.type_id,
@@ -34,7 +29,6 @@ LEFT JOIN bookings b ON s.site_id = b.site_id
     AND CURRENT_DATE BETWEEN b.check_in AND b.check_out
 GROUP BY st.type_id, st.type_name;
 
--- 视图3: 用户预订统计视图
 CREATE OR REPLACE VIEW view_user_booking_stats AS
 SELECT 
     u.user_id,
@@ -48,7 +42,6 @@ LEFT JOIN bookings b ON u.user_id = b.user_id
 GROUP BY u.user_id, u.username
 ORDER BY total_spent DESC;
 
--- 视图4: 设备库存视图
 CREATE OR REPLACE VIEW view_equipment_inventory AS
 SELECT 
     e.equip_id,
@@ -63,6 +56,35 @@ LEFT JOIN booking_equips be ON e.equip_id = be.equip_id
 LEFT JOIN bookings b ON be.booking_id = b.booking_id AND b.status IN (0, 1)
 GROUP BY e.equip_id, e.equip_name, e.category, e.total_stock;
 
+-- 可用量查询占位说明：
+-- 查询房型在日期范围的剩余量（示例占位，具体实现需根据实际表结构完成）
+-- SELECT st.type_id AS typeId,
+--        COUNT(s.site_id) AS total,
+--        COUNT(s.site_id) - (
+--          SELECT COUNT(b.site_id)
+--          FROM bookings b
+--          WHERE b.type_id = st.type_id
+--            AND b.status != 2
+--            AND b.check_in < :endDate
+--            AND b.check_out > :startDate
+--        ) AS remaining
+-- FROM site_types st
+-- JOIN sites s ON s.type_id = st.type_id AND s.status = 1
+-- GROUP BY st.type_id;
+
+-- 查询装备在日期范围的剩余量（示例占位）
+-- SELECT e.equip_id AS equipId,
+--        e.total_stock AS total,
+--        e.total_stock - COALESCE((
+--          SELECT SUM(be.quantity)
+--          FROM booking_equips be
+--          JOIN bookings b ON b.booking_id = be.booking_id
+--          WHERE be.equip_id = e.equip_id
+--            AND b.status != 2
+--            AND b.check_in < :endDate
+--            AND b.check_out > :startDate
+--        ), 0) AS remaining
+-- FROM equipments e;
 -- ============================================================================
 -- 触发器和函数定义
 -- ============================================================================

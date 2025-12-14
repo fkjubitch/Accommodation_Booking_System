@@ -197,4 +197,32 @@ public class AdminController {
             return Result.error("获取收益趋势失败: " + e.getMessage());
         }
     }
+
+    /**
+     * 手动调整订单价格
+     */
+    @PostMapping("/booking/price-adjust")
+    public Result<Void> adjustBookingPrice(@RequestBody Map<String, Object> data) {
+        try {
+            // data: bookingId(Long), newPrice(BigDecimal), remark(String)
+            // TODO: 更新订单价格并记录操作日志
+            return Result.success(null);
+        } catch (Exception e) {
+            return Result.error("调整订单价格失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 查询用户操作记录
+     */
+    @GetMapping("/user/{userId}/behavior")
+    public Result<List<Object>> getUserBehaviorLog(@PathVariable Long userId,
+            @RequestParam(defaultValue = "50") Integer limit) {
+        try {
+            // TODO: 查询用户行为日志，限制返回条数
+            return Result.success(new ArrayList<>());
+        } catch (Exception e) {
+            return Result.error("获取用户行为记录失败: " + e.getMessage());
+        }
+    }
 }

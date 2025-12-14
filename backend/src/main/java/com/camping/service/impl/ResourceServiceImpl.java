@@ -30,9 +30,28 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<Object> getSiteTypes() throws Exception {
-        // TODO: 调用 Mapper 查询所有房型，计算剩余可用营位数
+        // TODO: 调用 Mapper 查询所有房型，计算 totalSites / availableSites
         // List<SiteType> types = siteTypeMapper.selectAll();
-        // 对每个房型计算: totalSites, availableSites
+        // return types.stream().map(t -> Map.of(
+        // "typeId", t.getTypeId(),
+        // "typeName", t.getTypeName(),
+        // "basePrice", t.getBasePrice(),
+        // "maxGuests", t.getMaxGuests(),
+        // "totalSites", total,
+        // "availableSites", available,
+        // "description", t.getDescription()
+        // )).toList();
+        return new ArrayList<>();
+    }
+
+    /**
+     * 获取当日房型列表（含当日价格与可用量）
+     */
+    @Override
+    public List<Object> getSiteTypesToday() throws Exception {
+        // TODO: 查询视图 view_site_availability_today
+        // 返回字段: typeId, typeName, priceToday, basePrice, maxGuests, totalSites,
+        // availableSites, description
         return new ArrayList<>();
     }
 
@@ -94,9 +113,41 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<Object> getEquipments() throws Exception {
-        // TODO: 调用 Mapper 查询所有装备，计算剩余可用库存
+        // TODO: 调用 Mapper 查询所有装备，计算 availableStock = totalStock - reservedCount
         // List<Equipment> equipments = equipmentMapper.selectAll();
-        // 对每个装备计算: availableStock = totalStock - reservedCount
+        // return equipments.stream().map(e -> Map.of(
+        // "equipId", e.getEquipId(),
+        // "equipName", e.getEquipName(),
+        // "unitPrice", e.getUnitPrice(),
+        // "totalStock", e.getTotalStock(),
+        // "availableStock", available,
+        // "category", e.getCategory(),
+        // "description", e.getDescription()
+        // )).toList();
         return new ArrayList<>();
+    }
+
+    /**
+     * 获取当日装备列表（含当日可用库存）
+     */
+    @Override
+    public List<Object> getEquipmentsToday() throws Exception {
+        // TODO: 查询视图 view_equipment_availability_today
+        // 返回字段: equipId, equipName, category, unitPrice, totalStock, availableStock,
+        // description
+        return new ArrayList<>();
+    }
+
+    /**
+     * 获取装备详情
+     */
+    @Override
+    public Object getEquipmentDetail(Long equipId) throws Exception {
+        if (equipId == null) {
+            throw new Exception("装备ID不能为空");
+        }
+
+        // TODO: 查询装备详情
+        return new HashMap<>();
     }
 }
