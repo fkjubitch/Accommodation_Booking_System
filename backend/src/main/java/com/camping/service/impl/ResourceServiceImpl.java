@@ -1,6 +1,12 @@
 package com.camping.service.impl;
 
+import com.camping.entity.SiteType;
+import com.camping.entity.Equipment;
+import com.camping.mapper.SiteTypeMapper;
+import com.camping.mapper.EquipmentMapper;
+import com.camping.mapper.SiteMapper;
 import com.camping.service.ResourceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -10,14 +16,23 @@ import java.util.*;
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
+    @Autowired
+    private SiteTypeMapper siteTypeMapper;
+
+    @Autowired
+    private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private SiteMapper siteMapper;
+
     /**
      * 获取所有房型列表
      */
     @Override
     public List<Object> getSiteTypes() throws Exception {
-        // TODO: 从数据库查询所有房型
-        // SELECT typeId, typeName, basePrice, maxGuests, description, imageUrl FROM
-        // SiteTypeTable
+        // TODO: 调用 Mapper 查询所有房型，计算剩余可用营位数
+        // List<SiteType> types = siteTypeMapper.selectAll();
+        // 对每个房型计算: totalSites, availableSites
         return new ArrayList<>();
     }
 
@@ -79,9 +94,9 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<Object> getEquipments() throws Exception {
-        // TODO: 从数据库查询所有装备
-        // SELECT equipId, equipName, unitPrice, totalStock, category, description FROM
-        // EquipmentTable
+        // TODO: 调用 Mapper 查询所有装备，计算剩余可用库存
+        // List<Equipment> equipments = equipmentMapper.selectAll();
+        // 对每个装备计算: availableStock = totalStock - reservedCount
         return new ArrayList<>();
     }
 }

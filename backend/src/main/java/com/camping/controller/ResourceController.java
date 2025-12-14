@@ -1,6 +1,8 @@
 package com.camping.controller;
 
 import com.camping.common.Result;
+import com.camping.service.ResourceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -10,13 +12,16 @@ import java.util.*;
 @RestController
 public class ResourceController {
 
+    @Autowired
+    private ResourceService resourceService;
+
     /**
      * 获取所有房型列表
      */
     @GetMapping("/type/list")
     public Result<List<Object>> getSiteTypes() {
         try {
-            // TODO: 从数据库查询所有房型
+            // TODO: 调用 Service 查询房型列表
             List<Object> types = new ArrayList<>();
             return Result.success(types);
         } catch (Exception e) {
@@ -77,7 +82,7 @@ public class ResourceController {
     @GetMapping("/equip/list")
     public Result<List<Object>> getEquipments() {
         try {
-            // TODO: 从数据库查询所有装备
+            // TODO: 调用 Service 查询装备列表
             return Result.success(new ArrayList<>());
         } catch (Exception e) {
             return Result.error("获取装备列表失败: " + e.getMessage());
